@@ -3,6 +3,10 @@
 Thumbs.db
 
 # Python
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
 __pycache__/
 *.py[cod]
 *.pyo
