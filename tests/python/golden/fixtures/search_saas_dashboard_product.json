@@ -1,0 +1,40 @@
+{
+  "query": "saas dashboard",
+  "domain": "product",
+  "expected": {
+    "domain": "product",
+    "stack": null,
+    "query": "saas dashboard",
+    "file": "products.csv",
+    "count": 3,
+    "results": [
+      {
+        "Color Palette Focus": "Vibrant primary + white space",
+        "Dashboard Style (if applicable)": "Executive Dashboard",
+        "Keywords": "app, b2b, cloud, indie, micro, micro-saas, niche, saas, small, software, solo, subscription",
+        "Landing Page Pattern": "Minimal & Direct + Demo",
+        "Primary Style Recommendation": "Flat Design + Vibrant & Block",
+        "Product Type": "Micro SaaS",
+        "Secondary Styles": "Motion-Driven, Micro-interactions"
+      },
+      {
+        "Color Palette Focus": "Trust blue + accent contrast",
+        "Dashboard Style (if applicable)": "Data-Dense + Real-Time Monitoring",
+        "Keywords": "app, b2b, cloud, general, saas, software, subscription",
+        "Landing Page Pattern": "Hero + Features + CTA",
+        "Primary Style Recommendation": "Glassmorphism + Flat Design",
+        "Product Type": "SaaS (General)",
+        "Secondary Styles": "Soft UI Evolution, Minimalism"
+      },
+      {
+        "Color Palette Focus": "Cool→Hot gradients + neutral grey",
+        "Dashboard Style (if applicable)": "Drill-Down Analytics + Comparative",
+        "Keywords": "admin, analytics, dashboard, data, panel",
+        "Landing Page Pattern": "N/A - Analytics focused",
+        "Primary Style Recommendation": "Data-Dense + Heat Map & Heatmap",
+        "Product Type": "Analytics Dashboard",
+        "Secondary Styles": "Minimalism, Dark Mode (OLED)"
+      }
+    ]
+  }
+}

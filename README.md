@@ -33,6 +33,10 @@ An AI skill that provides design intelligence for building professional UI/UX ac
   <a href="https://nextlevelbuilder.io">NextLevelBuilder.io</a> | <a href="https://goclaw.sh">GoClaw.sh</a> | <a href="https://claudekit.cc">ClaudeKit.cc</a> | <a href="https://tose.sh">TOSE.sh</a>
 </p>
 
+## Contributing
+
+Contributions are welcome via fork and pull request. Please read **[CONTRIBUTING.md](./CONTRIBUTING.md)** for branch naming, PR structure, tests, and `cli/assets/` sync rules. See **[SECURITY.md](./SECURITY.md)** for trust boundaries and install safety. Security hardening work follows **[docs/security-hardening-plan.md](./docs/security-hardening-plan.md)**.
+
 ## What's New in v2.0
 
 ### Intelligent Design System Generation

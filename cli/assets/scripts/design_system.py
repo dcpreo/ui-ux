@@ -19,6 +19,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 from core import search, DATA_DIR
+from path_utils import PathTraversalError, resolve_under_base, safe_slug, validate_name_input
 
 
 # ============ CONFIGURATION ============
@@ -571,22 +572,33 @@ def persist_design_system(design_system: dict, page: str = None, output_dir: str
     Returns:
         dict with created file paths and status
     """
-    base_dir = Path(output_dir) if output_dir else Path.cwd()
-    
-    # Use project name for project-specific folder
+    base_dir = Path(output_dir).resolve() if output_dir else Path.cwd().resolve()
+
     project_name = design_system.get("project_name", "default")
-    project_slug = project_name.lower().replace(' ', '-')
-    
-    design_system_dir = base_dir / "design-system" / project_slug
-    pages_dir = design_system_dir / "pages"
-    
+    validate_name_input(project_name, "project_name")
+    if page:
+        validate_name_input(page, "page")
+
+    project_slug = safe_slug(project_name, default="default")
+    page_slug = safe_slug(page, default="page") if page else None
+
+    try:
+        design_system_root = resolve_under_base(base_dir, "design-system")
+        design_system_dir = resolve_under_base(design_system_root, project_slug)
+        pages_dir = resolve_under_base(design_system_dir, "pages")
+        if page_slug:
+            resolve_under_base(pages_dir, f"{page_slug}.md")
+    except PathTraversalError as exc:
+        raise PathTraversalError(
+            f"Invalid project or output path ({project_name!r}): {exc}"
+        ) from exc
+
     created_files = []
-    
-    # Create directories
+
     design_system_dir.mkdir(parents=True, exist_ok=True)
     pages_dir.mkdir(parents=True, exist_ok=True)
-    
-    master_file = design_system_dir / "MASTER.md"
+
+    master_file = resolve_under_base(design_system_dir, "MASTER.md")
     
     # Generate and write MASTER.md
     master_content = format_master_md(design_system)
@@ -596,7 +608,7 @@ def persist_design_system(design_system: dict, page: str = None, output_dir: str
     
     # If page is specified, create page override file with intelligent content
     if page:
-        page_file = pages_dir / f"{page.lower().replace(' ', '-')}.md"
+        page_file = resolve_under_base(pages_dir, f"{page_slug}.md")
         page_content = format_page_override_md(design_system, page, page_query)
         with open(page_file, 'w', encoding='utf-8') as f:
             f.write(page_content)

@@ -1,0 +1,19 @@
+[project]
+name = "ui-ux-pro-max-skill"
+version = "0.0.0"
+description = "Development dependencies for UI/UX Pro Max skill tests"
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8.0.0",
+  "pytest-cov>=4.1.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/python"]
+pythonpath = ["src/ui-ux-pro-max/scripts", "tests/python"]
+addopts = "-ra"
+markers = [
+  "golden: frozen characterization fixtures (see scripts/regenerate_goldens.py)",
+]

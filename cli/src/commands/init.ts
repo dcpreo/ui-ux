@@ -12,9 +12,12 @@ import { logger } from '../utils/logger.js';
 import {
   getLatestRelease,
   getAssetUrl,
+  getZipAssetName,
+  findExpectedSha256,
   downloadRelease,
   GitHubRateLimitError,
   GitHubDownloadError,
+  GitHubChecksumError,
 } from '../utils/github.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -49,11 +52,19 @@ async function tryGitHubInstall(
       throw new GitHubDownloadError('No ZIP asset found in latest release');
     }
 
+    const zipAssetName = getZipAssetName(release);
+    let expectedSha256: string | undefined;
+    try {
+      expectedSha256 = await findExpectedSha256(release, zipAssetName);
+    } catch {
+      expectedSha256 = undefined;
+    }
+
     spinner.text = `Downloading ${release.tag_name}...`;
     tempDir = await createTempDir();
     const zipPath = join(tempDir, 'release.zip');
 
-    await downloadRelease(assetUrl, zipPath);
+    await downloadRelease(assetUrl, zipPath, { expectedSha256 });
 
     spinner.text = 'Extracting and installing files...';
     const { copiedFolders, tempDir: extractedTempDir } = await installFromZip(
@@ -77,7 +88,7 @@ async function tryGitHubInstall(
       return null;
     }
 
-    if (error instanceof GitHubDownloadError) {
+    if (error instanceof GitHubDownloadError || error instanceof GitHubChecksumError) {
       spinner.warn('GitHub download failed, using template generation...');
       return null;
     }
@@ -158,6 +169,9 @@ export async function initCommand(options: InitOptions): Promise<void> {
   try {
     // Use legacy ZIP-based install if --legacy flag is set
     if (options.legacy) {
+      spinner.warn(
+        'Legacy mode downloads release archives from GitHub without checksum verification. Prefer default install (template generation).'
+      );
       if (isGlobal) {
         spinner.warn('--global is not supported with --legacy mode, installing locally instead');
       }

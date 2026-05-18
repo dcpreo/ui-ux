@@ -1,0 +1,13 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`template utils renderSkillFile snapshot excerpt — cursor: cursor-skill-excerpt 1`] = `
+"name: ui-ux-pro-max
+# ui-ux-pro-max
+python3 skills/ui-ux-pro-max/scripts/search.py "<product_type> <industry> <keywords>" --design-system [-p "Project Name"]"
+`;
+
+exports[`template utils renderSkillFile snapshot excerpt — claude: claude-skill-excerpt 1`] = `
+"name: ui-ux-pro-max
+# UI/UX Pro Max - Design Intelligence
+python3 skills/ui-ux-pro-max/scripts/search.py "<product_type> <industry> <keywords>" --design-system [-p "Project Name"]"
+`;

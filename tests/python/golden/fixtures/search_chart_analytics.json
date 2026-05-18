@@ -1,0 +1,58 @@
+{
+  "query": "analytics dashboard trend",
+  "domain": "chart",
+  "expected": {
+    "domain": "chart",
+    "stack": null,
+    "query": "analytics dashboard trend",
+    "file": "charts.csv",
+    "count": 3,
+    "results": [
+      {
+        "A11y Fallback": "Dashed/dotted lines per series; togglable data table with timestamps and values",
+        "Accessibility Grade": "AA",
+        "Accessibility Notes": "Differentiate series by line style (solid/dashed/dotted) not color alone. Add pattern overlays for colorblind users.",
+        "Best Chart Type": "Line Chart",
+        "Color Guidance": "Primary: #0080FF. Multiple series: distinct colors + distinct line styles. Fill: 20% opacity",
+        "Data Type": "Trend Over Time",
+        "Data Volume Threshold": "<1000 pts: SVG; ≥1000 pts: Canvas + downsampling; >10000: aggregate to intervals",
+        "Interactive Level": "Hover + Zoom",
+        "Keywords": "trend, time-series, line, growth, timeline, progress",
+        "Library Recommendation": "Chart.js, Recharts, ApexCharts",
+        "Secondary Options": "Area Chart, Smooth Area",
+        "When NOT to Use": "Fewer than 4 data points (use stat card); more than 6 series (visual noise); no time dimension exists",
+        "When to Use": "Data has a time axis; user needs to observe rise/fall trends or rate of change over a continuous period"
+      },
+      {
+        "A11y Fallback": "Numerical values always visible (not hover-only); color ranges labeled with threshold text",
+        "Accessibility Grade": "AAA",
+        "Accessibility Notes": "All values always visible as text. Color ranges are labeled with text thresholds not color alone.",
+        "Best Chart Type": "Bullet Chart",
+        "Color Guidance": "Qualitative ranges: #FFCDD2 / #FFF9C4 / #C8E6C9 (bad/ok/good). Performance bar: #1976D2. Target: black 3px marker",
+        "Data Type": "Performance vs Target (Compact)",
+        "Data Volume Threshold": "Ideal for 3–10 bullet charts in a grid; scales to any count efficiently",
+        "Interactive Level": "Hover",
+        "Keywords": "bullet, compact, kpi, dashboard, target, benchmark, range",
+        "Library Recommendation": "D3.js, Plotly, Custom SVG",
+        "Secondary Options": "Gauge, Progress Bar",
+        "When NOT to Use": "Single KPI with emphasis (use gauge); data has no defined target range; fewer than 3 KPIs",
+        "When to Use": "Dashboard with multiple KPIs side by side; space-constrained contexts where a gauge is too large"
+      },
+      {
+        "A11y Fallback": "Numerical value + % of target shown as visible text; ARIA live region for real-time updates",
+        "Accessibility Grade": "AA",
+        "Accessibility Notes": "Always show numerical value + % of target as text beside chart. Never rely on color position alone.",
+        "Best Chart Type": "Gauge Chart or Bullet Chart",
+        "Color Guidance": "Performance: Red → Yellow → Green gradient. Target: marker line. Threshold zones clearly differentiated",
+        "Data Type": "Performance vs Target",
+        "Data Volume Threshold": "Single metric per gauge; for 3+ KPIs use bullet chart grid layout",
+        "Interactive Level": "Hover",
+        "Keywords": "performance, target, kpi, gauge, goal, threshold, progress",
+        "Library Recommendation": "D3.js, ApexCharts, Custom SVG",
+        "Secondary Options": "Dial, Thermometer",
+        "When NOT to Use": "No target or benchmark exists; comparing multiple KPIs at once (use bullet chart grid)",
+        "When to Use": "Single KPI measured against a defined target or threshold; dashboard summary context"
+      }
+    ]
+  }
+}

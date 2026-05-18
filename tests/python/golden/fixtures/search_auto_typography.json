@@ -1,0 +1,48 @@
+{
+  "query": "font pairing serif editorial",
+  "expected": {
+    "domain": "google-fonts",
+    "stack": null,
+    "query": "font pairing serif editorial",
+    "file": "google-fonts.csv",
+    "count": 3,
+    "results": [
+      {
+        "Category": "Serif",
+        "Classifications": "",
+        "Designers": "ANRT",
+        "Family": "Baskervville SC",
+        "Google Fonts URL": "https://fonts.google.com/specimen/Baskervville+SC",
+        "Popularity Rank": "1276",
+        "Stroke": "Serif",
+        "Styles": "400 | 500 | 600 | 700",
+        "Subsets": "latin | latin-ext",
+        "Variable Axes": "wght: -"
+      },
+      {
+        "Category": "Serif",
+        "Classifications": "",
+        "Designers": "Greek Font Society",
+        "Family": "GFS Didot",
+        "Google Fonts URL": "https://fonts.google.com/specimen/GFS+Didot",
+        "Popularity Rank": "467",
+        "Stroke": "Serif",
+        "Styles": "400",
+        "Subsets": "greek | greek-ext | latin | vietnamese",
+        "Variable Axes": ""
+      },
+      {
+        "Category": "Serif",
+        "Classifications": "",
+        "Designers": "Gustavo Ibarra",
+        "Family": "Buenard",
+        "Google Fonts URL": "https://fonts.google.com/specimen/Buenard",
+        "Popularity Rank": "993",
+        "Stroke": "Serif",
+        "Styles": "400 | 500 | 600 | 700",
+        "Subsets": "latin | latin-ext",
+        "Variable Axes": "wght: -"
+      }
+    ]
+  }
+}

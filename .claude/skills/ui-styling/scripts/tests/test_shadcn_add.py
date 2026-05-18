@@ -108,6 +108,14 @@ class TestShadcnInstaller:
         assert success is False
         assert "not initialized" in message
 
+    def test_add_components_rejects_invalid_names(self, temp_project):
+        """Test shell-metacharacter names are rejected before subprocess."""
+        installer = ShadcnInstaller(project_root=temp_project)
+        success, message = installer.add_components(["button;rm -rf /"])
+
+        assert success is False
+        assert "Invalid component name" in message
+
     def test_add_components_already_installed(self, temp_project):
         """Test adding components that are already installed."""
         ui_dir = temp_project / "components" / "ui"

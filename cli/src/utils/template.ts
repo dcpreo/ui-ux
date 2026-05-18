@@ -1,11 +1,29 @@
+import { accessSync } from 'node:fs';
 import { readFile, mkdir, writeFile, cp, access, readdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-// After bun build: dist/index.js -> ../assets = cli/assets ✓
-const ASSETS_DIR = join(__dirname, '..', 'assets');
+
+/** Resolve cli/assets from bundled dist (../assets) or source (../../assets). */
+function resolveAssetsDir(): string {
+  const candidates = [
+    join(__dirname, '..', 'assets'),
+    join(__dirname, '..', '..', 'assets'),
+  ];
+  for (const dir of candidates) {
+    try {
+      accessSync(join(dir, 'templates', 'platforms', 'cursor.json'));
+      return dir;
+    } catch {
+      // try next candidate
+    }
+  }
+  throw new Error(`Could not locate cli/assets (searched from ${__dirname})`);
+}
+
+const ASSETS_DIR = resolveAssetsDir();
 
 export interface PlatformConfig {
   platform: string;

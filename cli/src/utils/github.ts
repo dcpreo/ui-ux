@@ -1,5 +1,10 @@
 import { writeFile } from 'node:fs/promises';
 import type { Release } from '../types/index.js';
+import {
+  computeSha256Hex,
+  parseSha256Sidecar,
+  parseSha256SumForFile,
+} from './checksum.js';
 
 const REPO_OWNER = 'nextlevelbuilder';
 const REPO_NAME = 'ui-ux-pro-max-skill';
@@ -16,6 +21,13 @@ export class GitHubDownloadError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'GitHubDownloadError';
+  }
+}
+
+export class GitHubChecksumError extends GitHubDownloadError {
+  constructor(message: string) {
+    super(message);
+    this.name = 'GitHubChecksumError';
   }
 }
 
@@ -69,7 +81,62 @@ export async function getLatestRelease(): Promise<Release> {
   return response.json();
 }
 
-export async function downloadRelease(url: string, dest: string): Promise<void> {
+async function fetchReleaseAssetText(url: string): Promise<string> {
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'uipro-cli',
+      'Accept': 'application/octet-stream',
+    },
+  });
+
+  checkRateLimit(response);
+
+  if (!response.ok) {
+    throw new GitHubDownloadError(`Failed to fetch checksum asset: ${response.status} ${response.statusText}`);
+  }
+
+  return response.text();
+}
+
+/**
+ * Resolve expected SHA-256 for a release ZIP when maintainers publish checksums.
+ * Returns undefined if no checksum asset exists (download proceeds without verification).
+ */
+export async function findExpectedSha256(
+  release: Release,
+  zipAssetName: string
+): Promise<string | undefined> {
+  const sidecar = release.assets.find(
+    (a) =>
+      a.name === `${zipAssetName}.sha256` ||
+      a.name === `${zipAssetName}.sha256.txt`
+  );
+  if (sidecar?.browser_download_url) {
+    const text = await fetchReleaseAssetText(sidecar.browser_download_url);
+    return parseSha256Sidecar(text);
+  }
+
+  const sumsAsset = release.assets.find((a) =>
+    /^(SHA256SUMS|sha256sums|checksums\.sha256)$/i.test(a.name)
+  );
+  if (sumsAsset?.browser_download_url) {
+    const text = await fetchReleaseAssetText(sumsAsset.browser_download_url);
+    return parseSha256SumForFile(text, zipAssetName);
+  }
+
+  return undefined;
+}
+
+export interface DownloadReleaseOptions {
+  /** When set, verify buffer SHA-256 before writing. Omit to skip verification. */
+  expectedSha256?: string;
+}
+
+export async function downloadRelease(
+  url: string,
+  dest: string,
+  options?: DownloadReleaseOptions
+): Promise<void> {
   const response = await fetch(url, {
     headers: {
       'User-Agent': 'uipro-cli',
@@ -83,22 +150,40 @@ export async function downloadRelease(url: string, dest: string): Promise<void> 
     throw new GitHubDownloadError(`Failed to download: ${response.status} ${response.statusText}`);
   }
 
-  const buffer = await response.arrayBuffer();
-  await writeFile(dest, Buffer.from(buffer));
+  const buffer = Buffer.from(await response.arrayBuffer());
+
+  if (options?.expectedSha256) {
+    const expected = options.expectedSha256.toLowerCase();
+    const actual = computeSha256Hex(buffer);
+    if (actual !== expected) {
+      throw new GitHubChecksumError(
+        `Checksum mismatch for download: expected ${expected}, got ${actual}`
+      );
+    }
+  }
+
+  await writeFile(dest, buffer);
 }
 
 export function getAssetUrl(release: Release): string | null {
-  // First try to find an uploaded ZIP asset
-  const asset = release.assets.find(a => a.name.endsWith('.zip'));
+  const asset = release.assets.find((a) => a.name.endsWith('.zip'));
   if (asset?.browser_download_url) {
     return asset.browser_download_url;
   }
 
-  // Fall back to GitHub's auto-generated archive
-  // Format: https://github.com/{owner}/{repo}/archive/refs/tags/{tag}.zip
   if (release.tag_name) {
     return `https://github.com/${REPO_OWNER}/${REPO_NAME}/archive/refs/tags/${release.tag_name}.zip`;
   }
 
   return null;
+}
+
+/** Primary ZIP asset name for checksum lookup, or a sensible default from the tag. */
+export function getZipAssetName(release: Release): string {
+  const asset = release.assets.find((a) => a.name.endsWith('.zip'));
+  if (asset?.name) return asset.name;
+  if (release.tag_name) {
+    return `${REPO_NAME}-${release.tag_name.replace(/^v/, '')}.zip`;
+  }
+  return 'release.zip';
 }

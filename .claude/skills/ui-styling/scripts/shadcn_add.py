@@ -8,10 +8,13 @@ Wraps shadcn CLI for programmatic component installation.
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
 from typing import List, Optional
+
+COMPONENT_NAME_PATTERN = re.compile(r"^[a-z0-9-]+$")
 
 
 class ShadcnInstaller:
@@ -79,6 +82,14 @@ class ShadcnInstaller:
         """
         if not components:
             return False, "No components specified"
+
+        invalid = [c for c in components if not COMPONENT_NAME_PATTERN.match(c)]
+        if invalid:
+            return (
+                False,
+                f"Invalid component name(s): {', '.join(invalid)}. "
+                "Use lowercase letters, numbers, and hyphens only.",
+            )
 
         if not self.check_shadcn_config():
             return (

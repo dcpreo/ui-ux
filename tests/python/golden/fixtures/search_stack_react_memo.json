@@ -1,0 +1,35 @@
+{
+  "query": "useCallback memo rerender",
+  "stack": "react",
+  "expected": {
+    "domain": "stack",
+    "stack": "react",
+    "query": "useCallback memo rerender",
+    "file": "stacks/react.csv",
+    "count": 2,
+    "results": [
+      {
+        "Category": "Rendering",
+        "Code Bad": "memo(SimpleButton)",
+        "Code Good": "memo(ExpensiveList)",
+        "Description": "Wrap components that render often with same props",
+        "Do": "memo for pure components with stable props",
+        "Docs URL": "https://react.dev/reference/react/memo",
+        "Don't": "memo everything or nothing",
+        "Guideline": "Use React.memo wisely",
+        "Severity": "Low"
+      },
+      {
+        "Category": "Rendering",
+        "Code Bad": "const handler = () => {}",
+        "Code Good": "useCallback(() => {}, [deps])",
+        "Description": "Use useCallback for functions passed as props",
+        "Do": "useCallback for handlers passed to memoized children",
+        "Docs URL": "https://react.dev/reference/react/useCallback",
+        "Don't": "New function reference every render",
+        "Guideline": "Memoize callbacks passed to children",
+        "Severity": "Medium"
+      }
+    ]
+  }
+}

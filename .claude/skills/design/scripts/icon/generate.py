@@ -24,6 +24,15 @@ from pathlib import Path
 from datetime import datetime
 
 
+def sanitize_svg(svg: str) -> str:
+    """Strip script tags, event handlers, and javascript: URIs from model output."""
+    svg = re.sub(r"<script\b[^>]*>.*?</script>", "", svg, flags=re.I | re.S)
+    svg = re.sub(r'\s+on\w+\s*=\s*["\'][^"\']*["\']', "", svg, flags=re.I)
+    svg = re.sub(r"\s+on\w+\s*=\s*[^\s>]+", "", svg, flags=re.I)
+    svg = re.sub(r"javascript:", "", svg, flags=re.I)
+    return svg
+
+
 def load_env():
     """Load .env files in priority order"""
     env_paths = [
@@ -46,10 +55,12 @@ load_env()
 try:
     from google import genai
     from google.genai import types
+
+    GENAI_AVAILABLE = True
 except ImportError:
-    print("Error: google-genai package not installed.")
-    print("Install with: pip install google-genai")
-    sys.exit(1)
+    genai = None
+    types = None
+    GENAI_AVAILABLE = False
 
 
 # ============ CONFIGURATION ============
@@ -190,6 +201,11 @@ def generate_icon(prompt, style=None, category=None, name=None,
                   color=None, size=24, output_path=None, viewbox=24):
     """Generate a single SVG icon using Gemini 3.1 Pro Preview"""
 
+    if not GENAI_AVAILABLE:
+        print("Error: google-genai package not installed.")
+        print("Install with: pip install google-genai")
+        return None
+
     if not GEMINI_API_KEY:
         print("Error: GEMINI_API_KEY not set")
         print("Set it with: export GEMINI_API_KEY='your-key'")
@@ -255,7 +271,7 @@ def generate_icon(prompt, style=None, category=None, name=None,
             print(response_text[:500])
             return None
 
-        svg_code = svgs[0]
+        svg_code = sanitize_svg(svgs[0])
 
         # Apply color if specified
         svg_code = apply_color(svg_code, color)
@@ -286,6 +302,11 @@ def generate_icon(prompt, style=None, category=None, name=None,
 def generate_batch(prompt, count, output_dir, style=None, color=None,
                    viewbox=24, name=None):
     """Generate multiple icon variations"""
+
+    if not GENAI_AVAILABLE:
+        print("Error: google-genai package not installed.")
+        print("Install with: pip install google-genai")
+        return []
 
     if not GEMINI_API_KEY:
         print("Error: GEMINI_API_KEY not set")
@@ -347,7 +368,7 @@ def generate_batch(prompt, count, output_dir, style=None, color=None,
         style_suffix = f"_{style}" if style else ""
 
         for i, svg_code in enumerate(svgs[:count]):
-            svg_code = apply_color(svg_code, color)
+            svg_code = apply_color(sanitize_svg(svg_code), color)
             filename = f"{slug}{style_suffix}_{i+1:02d}.svg"
             filepath = os.path.join(output_dir, filename)
 

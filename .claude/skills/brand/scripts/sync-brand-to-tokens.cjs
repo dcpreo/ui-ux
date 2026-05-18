@@ -11,7 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 
 // Paths
 const BRAND_GUIDELINES = 'docs/brand-guidelines.md';
@@ -246,21 +246,54 @@ function main() {
   fs.writeFileSync(tokensPath, JSON.stringify(tokens, null, 2));
   console.log(`✅ Updated: ${DESIGN_TOKENS_JSON}`);
 
-  // Regenerate CSS
   const generateScript = path.resolve(process.cwd(), GENERATE_TOKENS_SCRIPT);
-  if (fs.existsSync(generateScript)) {
-    try {
-      execSync(`node ${generateScript} --config ${DESIGN_TOKENS_JSON} -o ${DESIGN_TOKENS_CSS}`, {
-        cwd: process.cwd(),
-        stdio: 'inherit'
-      });
-      console.log(`✅ Regenerated: ${DESIGN_TOKENS_CSS}`);
-    } catch (e) {
-      console.error('⚠️  Failed to regenerate CSS:', e.message);
-    }
+  if (runTokenCssRegeneration({
+    generateScript,
+    configPath: DESIGN_TOKENS_JSON,
+    outputPath: DESIGN_TOKENS_CSS,
+    cwd: process.cwd(),
+  })) {
+    console.log(`✅ Regenerated: ${DESIGN_TOKENS_CSS}`);
   }
 
   console.log('\n✨ Brand sync complete!');
 }
 
-main();
+/**
+ * Regenerate design-tokens.css via generate-tokens.cjs (no shell interpolation).
+ * @param {object} opts
+ * @param {string} opts.generateScript - Absolute path to generate-tokens.cjs
+ * @param {string} opts.configPath - Config path relative to cwd
+ * @param {string} opts.outputPath - Output path relative to cwd
+ * @param {string} opts.cwd - Working directory
+ * @param {typeof execFileSync} [opts.execFile] - Injectable for tests
+ * @param {typeof execFileSync} [execFileImpl] - Second-arg injectable for tests
+ * @returns {boolean} True if regeneration ran
+ */
+function runTokenCssRegeneration(opts, execFileImpl) {
+  const execFile = opts.execFile || execFileImpl || execFileSync;
+  if (!fs.existsSync(opts.generateScript)) {
+    return false;
+  }
+  try {
+    execFile(
+      process.execPath,
+      [opts.generateScript, '--config', opts.configPath, '-o', opts.outputPath],
+      { cwd: opts.cwd, stdio: 'inherit' }
+    );
+    return true;
+  } catch (e) {
+    console.error('⚠️  Failed to regenerate CSS:', e.message);
+    return false;
+  }
+}
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  runTokenCssRegeneration,
+  extractColorsFromMarkdown,
+  updateDesignTokens,
+};
