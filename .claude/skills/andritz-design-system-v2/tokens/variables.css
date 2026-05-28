@@ -1,0 +1,283 @@
+/* andritz-design-system-v2 — CSS Custom Properties
+   The Monolithic Engine v2 | Light + Dark themes
+   Three-layer architecture: Primitive -> Semantic -> Component */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* === PRIMITIVE TOKENS === */
+:root {
+  /* Andritz Blue Scale */
+  --primitive-andritz-blue-100: #f3f7ff;
+  --primitive-andritz-blue-200: #d6e8ff;
+  --primitive-andritz-blue-300: #9bcaff;
+  --primitive-andritz-blue-400: #96bdff;
+  --primitive-andritz-blue-500: #0075be;
+  --primitive-andritz-blue-600: #005c97;
+  --primitive-andritz-blue-700: #0062a0;
+  --primitive-andritz-blue-800: #004b93;
+  --primitive-andritz-blue-900: #003062;
+
+  /* Slate Scale */
+  --primitive-slate-100: #dae2fd;
+  --primitive-slate-200: #c2c6d2;
+  --primitive-slate-300: #b0c8ec;
+  --primitive-slate-400: #b8c8da;
+  --primitive-slate-500: #8c919c;
+  --primitive-slate-600: #707882;
+  --primitive-slate-700: #49607f;
+  --primitive-slate-800: #4b5a69;
+  --primitive-slate-900: #404751;
+
+  /* Error Scale */
+  --primitive-error-light: #ba1a1a;
+  --primitive-error-dark: #ffb4ab;
+  --primitive-error-container-light: #ffdad6;
+  --primitive-error-container-dark: #93000a;
+
+  /* Font Family */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Font Sizes */
+  --font-size-display-lg: 3.5rem;
+  --font-size-display-md: 2.5rem;
+  --font-size-display-sm: 2rem;
+  --font-size-headline-lg: 1.5rem;
+  --font-size-headline-md: 1.25rem;
+  --font-size-title-md: 1rem;
+  --font-size-title-sm: 0.875rem;
+  --font-size-body-md: 0.875rem;
+  --font-size-body-sm: 0.75rem;
+  --font-size-label-lg: 0.875rem;
+  --font-size-label-md: 0.75rem;
+  --font-size-label-sm: 0.625rem;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.1;
+  --line-height-snug: 1.15;
+  --line-height-compact: 1.2;
+  --line-height-heading: 1.3;
+  --line-height-normal: 1.4;
+  --line-height-caption: 1.5;
+  --line-height-relaxed: 1.6;
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-snug: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.05em;
+  --letter-spacing-wider: 0.1em;
+
+  /* Spacing (4px base unit) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Radius */
+  --radius-none: 0px;
+  --radius-pill: 9999px;
+
+  /* Duration */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+}
+
+/* === SEMANTIC TOKENS — LIGHT MODE (default) === */
+:root,
+[data-theme="light"] {
+  /* Primary */
+  --color-primary: var(--primitive-andritz-blue-600);
+  --color-primary-container: var(--primitive-andritz-blue-500);
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: var(--primitive-andritz-blue-100);
+
+  /* Secondary */
+  --color-secondary: var(--primitive-slate-700);
+  --color-secondary-container: #c1d9fd;
+  --color-on-secondary: #ffffff;
+
+  /* Tertiary */
+  --color-tertiary: var(--primitive-slate-800);
+  --color-tertiary-container: #637383;
+
+  /* Error */
+  --color-error: var(--primitive-error-light);
+  --color-error-container: var(--primitive-error-container-light);
+  --color-on-error: #ffffff;
+  --color-on-error-container: #410002;
+
+  /* Surface Hierarchy */
+  --color-surface: #f8fafb;
+  --color-surface-dim: #d8dadb;
+  --color-surface-bright: #f8fafb;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f4f5;
+  --color-surface-container: #eceeef;
+  --color-surface-container-high: #e6e8e9;
+  --color-surface-container-highest: #e1e3e4;
+
+  /* On Surface */
+  --color-on-surface: #191c1d;
+  --color-on-surface-variant: var(--primitive-slate-900);
+
+  /* Utility */
+  --color-outline: var(--primitive-slate-600);
+  --color-outline-variant: #c0c7d2;
+  --color-inverse-surface: #2e3132;
+  --color-inverse-on-surface: #eff1f2;
+  --color-inverse-primary: var(--primitive-andritz-blue-300);
+  --color-surface-tint: var(--primitive-andritz-blue-700);
+  --color-scrim: rgb(25 28 29 / 0.3);
+
+  /* Shadows */
+  --shadow-ambient: 0 8px 32px rgb(25 28 29 / 0.06);
+  --shadow-ambient-lg: 0 16px 64px rgb(25 28 29 / 0.06);
+}
+
+/* === SEMANTIC TOKENS — DARK MODE === */
+.dark,
+[data-theme="dark"] {
+  /* Primary */
+  --color-primary: var(--primitive-andritz-blue-300);
+  --color-primary-container: var(--primitive-andritz-blue-800);
+  --color-on-primary: var(--primitive-andritz-blue-900);
+  --color-on-primary-container: var(--primitive-andritz-blue-400);
+
+  /* Secondary */
+  --color-secondary: var(--primitive-slate-300);
+  --color-secondary-container: #314866;
+  --color-on-secondary: #0f1419;
+
+  /* Tertiary */
+  --color-tertiary: var(--primitive-slate-400);
+  --color-tertiary-container: #39485c;
+
+  /* Error */
+  --color-error: var(--primitive-error-dark);
+  --color-error-container: var(--primitive-error-container-dark);
+  --color-on-error: #690005;
+  --color-on-error-container: #ffdad6;
+
+  /* Surface Hierarchy */
+  --color-surface: #0f1419;
+  --color-surface-dim: #0f1419;
+  --color-surface-bright: #31394d;
+  --color-surface-container-lowest: #0a0f18;
+  --color-surface-container-low: #141b28;
+  --color-surface-container: #1a2130;
+  --color-surface-container-high: #242c3d;
+  --color-surface-container-highest: #2d3449;
+
+  /* On Surface */
+  --color-on-surface: #dae2fd;
+  --color-on-surface-variant: #c2c6d2;
+
+  /* Utility */
+  --color-outline: var(--primitive-slate-500);
+  --color-outline-variant: #424751;
+  --color-inverse-surface: #dae2fd;
+  --color-inverse-on-surface: #283044;
+  --color-inverse-primary: var(--primitive-andritz-blue-600);
+  --color-surface-tint: var(--primitive-andritz-blue-300);
+  --color-scrim: rgb(15 20 25 / 0.6);
+
+  /* Shadows */
+  --shadow-ambient: 0 12px 48px rgb(10 15 24 / 0.04);
+  --shadow-ambient-lg: 0 24px 80px rgb(10 15 24 / 0.04);
+}
+
+/* === COMPONENT TOKENS === */
+:root {
+  /* Button — Primary */
+  --button-primary-bg: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
+  --button-primary-fg: var(--color-on-primary);
+  --button-padding-x: var(--space-6);
+  --button-padding-y: var(--space-2);
+  --button-radius: var(--radius-none);
+  --button-font-size: var(--font-size-label-lg);
+  --button-font-weight: var(--font-weight-medium);
+  --button-letter-spacing: var(--letter-spacing-wide);
+  --button-height-sm: 2rem;
+  --button-height-md: 2.5rem;
+  --button-height-lg: 3rem;
+
+  /* Button — Secondary */
+  --button-secondary-bg: var(--color-surface-container-high);
+  --button-secondary-fg: var(--color-on-surface);
+
+  /* Button — Ghost */
+  --button-ghost-bg: transparent;
+  --button-ghost-fg: var(--color-on-surface);
+  --button-ghost-border: var(--color-outline-variant);
+
+  /* Button — Destructive */
+  --button-destructive-bg: var(--color-error);
+  --button-destructive-fg: var(--color-on-error);
+
+  /* Input */
+  --input-bg: var(--color-surface-container-highest);
+  --input-fg: var(--color-on-surface);
+  --input-focus-border: var(--color-primary);
+  --input-error-bg: var(--color-error-container);
+  --input-error-fg: var(--color-on-error-container);
+  --input-padding-x: var(--space-4);
+  --input-padding-y: var(--space-3);
+  --input-radius: var(--radius-none);
+  --input-disabled-opacity: 0.4;
+
+  /* Card */
+  --card-bg: var(--color-surface-container-lowest);
+  --card-padding: var(--space-6);
+  --card-radius: var(--radius-none);
+  --card-ghost-border: var(--color-outline-variant);
+  --card-ghost-border-opacity: 0.15;
+
+  /* Table */
+  --table-header-bg: var(--color-surface-container-high);
+  --table-row-even: var(--color-surface-container-lowest);
+  --table-row-odd: var(--color-surface-container-low);
+  --table-row-hover: var(--color-surface-container);
+
+  /* Modal */
+  --modal-bg: var(--color-surface-container-lowest);
+  --modal-shadow: var(--shadow-ambient-lg);
+  --modal-radius: var(--radius-none);
+  --modal-width-sm: 480px;
+  --modal-width-md: 640px;
+  --modal-width-lg: 800px;
+
+  /* Navigation */
+  --nav-top-bg: var(--color-surface-container);
+  --nav-active-indicator: var(--color-primary);
+  --nav-side-bg: var(--color-surface-container-low);
+  --nav-backdrop-blur: 20px;
+  --nav-backdrop-opacity: 0.85;
+
+  /* Chip */
+  --chip-radius: var(--radius-pill);
+  --chip-font-size: var(--font-size-label-sm);
+  --chip-font-weight: var(--font-weight-semibold);
+  --chip-letter-spacing: var(--letter-spacing-wider);
+  --chip-padding-x: var(--space-3);
+  --chip-padding-y: var(--space-1);
+
+  /* Grid */
+  --grid-max-width: 1440px;
+  --grid-gutter: var(--space-4);
+  --grid-columns-desktop: 12;
+  --grid-columns-tablet: 8;
+  --grid-columns-mobile: 4;
+  --grid-margin-mobile: var(--space-4);
+}

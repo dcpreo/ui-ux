@@ -1,0 +1,95 @@
+{
+  "$schema": "https://design-tokens.org/schema.json",
+  "$description": "andritz-design-system-v2 starter template — customize primitive values to generate a derived theme while maintaining the Monolithic Engine architecture.",
+  "primitive": {
+    "color": {
+      "brand": {
+        "100": { "$value": "#f3f7ff", "$type": "color", "$description": "Lightest brand tint" },
+        "300": { "$value": "#9bcaff", "$type": "color", "$description": "Light brand (dark mode primary)" },
+        "500": { "$value": "#0075be", "$type": "color", "$description": "Mid brand (container)" },
+        "600": { "$value": "#005c97", "$type": "color", "$description": "Core brand (light mode primary)" },
+        "800": { "$value": "#004b93", "$type": "color", "$description": "Deep brand (dark mode container)" },
+        "900": { "$value": "#003062", "$type": "color", "$description": "Darkest brand" }
+      },
+      "neutral": {
+        "0": { "$value": "#ffffff", "$type": "color" },
+        "50": { "$value": "#f8fafb", "$type": "color" },
+        "100": { "$value": "#f2f4f5", "$type": "color" },
+        "200": { "$value": "#eceeef", "$type": "color" },
+        "300": { "$value": "#e6e8e9", "$type": "color" },
+        "400": { "$value": "#e1e3e4", "$type": "color" },
+        "500": { "$value": "#d8dadb", "$type": "color" },
+        "600": { "$value": "#c0c7d2", "$type": "color" },
+        "900": { "$value": "#191c1d", "$type": "color" }
+      },
+      "neutral-dark": {
+        "50": { "$value": "#dae2fd", "$type": "color" },
+        "100": { "$value": "#2d3449", "$type": "color" },
+        "200": { "$value": "#242c3d", "$type": "color" },
+        "300": { "$value": "#1a2130", "$type": "color" },
+        "400": { "$value": "#141b28", "$type": "color" },
+        "500": { "$value": "#0f1419", "$type": "color" },
+        "600": { "$value": "#0a0f18", "$type": "color" }
+      },
+      "error": {
+        "light": { "$value": "#ba1a1a", "$type": "color" },
+        "dark": { "$value": "#ffb4ab", "$type": "color" },
+        "container-light": { "$value": "#ffdad6", "$type": "color" },
+        "container-dark": { "$value": "#93000a", "$type": "color" }
+      }
+    },
+    "spacing": {
+      "base": { "$value": "4px", "$type": "dimension", "$description": "Base spacing unit — all values must be multiples" },
+      "1": { "$value": "0.25rem", "$type": "dimension" },
+      "2": { "$value": "0.5rem", "$type": "dimension" },
+      "3": { "$value": "0.75rem", "$type": "dimension" },
+      "4": { "$value": "1rem", "$type": "dimension" },
+      "6": { "$value": "1.5rem", "$type": "dimension" },
+      "8": { "$value": "2rem", "$type": "dimension" },
+      "10": { "$value": "2.5rem", "$type": "dimension" },
+      "12": { "$value": "3rem", "$type": "dimension" },
+      "16": { "$value": "4rem", "$type": "dimension" }
+    },
+    "radius": {
+      "default": { "$value": "0px", "$type": "dimension", "$description": "Monolithic Engine: all components use 0px" },
+      "pill": { "$value": "9999px", "$type": "dimension", "$description": "Exception: chips and tags only" }
+    },
+    "fontFamily": {
+      "sans": { "$value": "'Inter', system-ui, -apple-system, sans-serif", "$type": "fontFamily" }
+    }
+  },
+  "semantic": {
+    "light": {
+      "primary": { "$value": "{primitive.color.brand.600}", "$type": "color" },
+      "primary-container": { "$value": "{primitive.color.brand.500}", "$type": "color" },
+      "surface": { "$value": "{primitive.color.neutral.50}", "$type": "color" },
+      "surface-container": { "$value": "{primitive.color.neutral.200}", "$type": "color" },
+      "surface-container-lowest": { "$value": "{primitive.color.neutral.0}", "$type": "color" },
+      "on-surface": { "$value": "{primitive.color.neutral.900}", "$type": "color" },
+      "error": { "$value": "{primitive.color.error.light}", "$type": "color" }
+    },
+    "dark": {
+      "primary": { "$value": "{primitive.color.brand.300}", "$type": "color" },
+      "primary-container": { "$value": "{primitive.color.brand.800}", "$type": "color" },
+      "surface": { "$value": "{primitive.color.neutral-dark.500}", "$type": "color" },
+      "surface-container": { "$value": "{primitive.color.neutral-dark.300}", "$type": "color" },
+      "surface-container-lowest": { "$value": "{primitive.color.neutral-dark.600}", "$type": "color" },
+      "on-surface": { "$value": "{primitive.color.neutral-dark.50}", "$type": "color" },
+      "error": { "$value": "{primitive.color.error.dark}", "$type": "color" }
+    }
+  },
+  "component": {
+    "button": {
+      "radius": { "$value": "{primitive.radius.default}", "$type": "dimension" },
+      "padding-x": { "$value": "{primitive.spacing.6}", "$type": "dimension" }
+    },
+    "card": {
+      "bg": { "$value": "{semantic.light.surface-container-lowest}", "$type": "color" },
+      "radius": { "$value": "{primitive.radius.default}", "$type": "dimension" },
+      "padding": { "$value": "{primitive.spacing.6}", "$type": "dimension" }
+    },
+    "chip": {
+      "radius": { "$value": "{primitive.radius.pill}", "$type": "dimension" }
+    }
+  }
+}
