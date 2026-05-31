@@ -50,17 +50,9 @@ program
 
 program
   .command('update')
-  .description('Update UI/UX Pro Max to latest version')
-  .option('-a, --ai <type>', `AI assistant type (${AI_TYPES.join(', ')})`)
-  .action(async (options) => {
-    if (options.ai && !AI_TYPES.includes(options.ai)) {
-      console.error(`Invalid AI type: ${options.ai}`);
-      console.error(`Valid types: ${AI_TYPES.join(', ')}`);
-      process.exit(1);
-    }
-    await updateCommand({
-      ai: options.ai as AIType | undefined,
-    });
+  .description('Update uipro-cli to latest version via npm')
+  .action(async () => {
+    await updateCommand();
   });
 
 program

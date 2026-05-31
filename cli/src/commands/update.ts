@@ -1,33 +1,36 @@
+import { execSync } from 'node:child_process';
 import chalk from 'chalk';
 import ora from 'ora';
 import { getLatestRelease } from '../utils/github.js';
 import { logger } from '../utils/logger.js';
-import { initCommand } from './init.js';
-import type { AIType } from '../types/index.js';
 
-interface UpdateOptions {
-  ai?: AIType;
-}
-
-export async function updateCommand(options: UpdateOptions): Promise<void> {
+export async function updateCommand(): Promise<void> {
   logger.title('UI/UX Pro Max Updater');
 
-  const spinner = ora('Checking for updates...').start();
+  const spinner = ora('Checking latest version...').start();
 
   try {
     const release = await getLatestRelease();
-    spinner.succeed(`Latest version: ${chalk.cyan(release.tag_name)}`);
+    const latest = release.tag_name;
+    spinner.succeed(`Latest release: ${chalk.cyan(latest)}`);
+  } catch {
+    spinner.warn('Could not fetch latest release info. Proceeding with update anyway.');
+  }
 
-    console.log();
-    logger.info('Running update (same as init with latest version)...');
-    console.log();
+  console.log();
+  logger.info('Updating uipro-cli via npm...');
+  console.log();
 
-    await initCommand({
-      ai: options.ai,
-      force: true,
-    });
+  try {
+    execSync('npm install -g uipro-cli@latest', { stdio: 'inherit' });
+    console.log();
+    logger.success('uipro-cli updated successfully!');
+    console.log();
+    console.log(chalk.bold('Next steps:'));
+    console.log(chalk.dim('  Run: uipro init --ai <type> --force  to reinstall the skill'));
+    console.log();
   } catch (error) {
-    spinner.fail('Update check failed');
+    logger.error('npm install failed. Try manually: npm install -g uipro-cli@latest');
     if (error instanceof Error) {
       logger.error(error.message);
     }
