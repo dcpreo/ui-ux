@@ -1,7 +1,7 @@
 {
   "name": "ui-ux-pro-max",
   "displayName": "UI/UX Pro Max",
-  "description": "AI-powered design intelligence with 67 UI styles, 161 color palettes, 57 font pairings, 99 UX guidelines, and 25 chart types across 15+ tech stacks.",
+  "description": "AI-powered UI/UX and product-site design intelligence with 67 UI styles, 161 color palettes, 57 font pairings, site architecture, page patterns, section patterns, 99 UX guidelines, and 25 chart types across 16 tech stacks.",
   "version": "2.5.0",
   "author": "NextLevelBuilder",
   "license": "MIT",
@@ -12,6 +12,8 @@
     "ux",
     "design",
     "design-system",
+    "product-site",
+    "site-architecture",
     "color-palette",
     "typography",
     "accessibility",

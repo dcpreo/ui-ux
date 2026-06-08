@@ -118,7 +118,7 @@ function renderFrontmatter(frontmatter: Record<string, string> | null): string {
 
 /**
  * Render skill file content from template
- * When isGlobal=true, rewrites script paths to use ~/{root}/ prefix
+ * When isGlobal=true, renders script paths with ~/{root}/ prefix.
  */
 export async function renderSkillFile(config: PlatformConfig, isGlobal = false): Promise<string> {
   // Load base template
@@ -136,22 +136,16 @@ export async function renderSkillFile(config: PlatformConfig, isGlobal = false):
   // Replace placeholders
   // Add newline before quick reference content if it exists
   const quickRefWithNewline = quickReferenceContent ? '\n' + quickReferenceContent : '';
+  const scriptPath = isGlobal
+    ? `~/${config.folderStructure.root}/${config.scriptPath}`
+    : `${config.folderStructure.root}/${config.scriptPath}`;
 
   content = content
     .replace(/\{\{TITLE\}\}/g, config.title)
     .replace(/\{\{DESCRIPTION\}\}/g, config.description)
-    .replace(/\{\{SCRIPT_PATH\}\}/g, config.scriptPath)
+    .replace(/\{\{SCRIPT_PATH\}\}/g, scriptPath)
     .replace(/\{\{SKILL_OR_WORKFLOW\}\}/g, config.skillOrWorkflow)
     .replace(/\{\{QUICK_REFERENCE\}\}/g, quickRefWithNewline);
-
-  // For global install, rewrite relative script paths to absolute ~/root/ paths
-  if (isGlobal) {
-    const globalPrefix = `~/${config.folderStructure.root}/`;
-    content = content.replace(
-      /python3 skills\//g,
-      `python3 ${globalPrefix}skills/`
-    );
-  }
 
   return frontmatter + content;
 }

@@ -35,7 +35,8 @@ Use this skill when the user requests any of the following:
 
 | Scenario | Trigger Examples | Start From |
 |----------|-----------------|------------|
-| **New project / page** | "做一个 landing page"、"Build a dashboard" | Step 1 → Step 2 (design system) |
+| **Product website / multi-page site** | "Design a SaaS website"、"Create feature + pricing pages" | Step 1 → Step 2a (site system) |
+| **New project / page** | "做一个 landing page"、"Build a dashboard" | Step 1 → Step 2b (design system) |
 | **New component** | "Create a pricing card"、"Add a modal" | Step 3 (domain search: style, ux) |
 | **Choose style / color / font** | "What style fits a fintech app?"、"推荐配色" | Step 2 (design system) |
 | **Review existing UI** | "Review this page for UX issues"、"检查无障碍" | Quick Reference checklist above |
@@ -53,14 +54,42 @@ Extract key information from user request:
 - **Product type**: Entertainment (social, video, music, gaming), Tool (scanner, editor, converter), Productivity (task manager, notes, calendar), or hybrid
 - **Target audience**: C-end consumer users; consider age group, usage context (commute, leisure, work)
 - **Style keywords**: playful, vibrant, minimal, dark mode, content-first, immersive, etc.
-- **Stack**: React Native (this project's only tech stack)
+- **Site scope**: single page, product website, marketplace, docs/product-led site, or app interface
+- **Stack**: infer from project context; use stack search when implementation guidance is needed
 
-### Step 2: Generate Design System (REQUIRED)
+### Step 2a: Generate Product Site System (for websites)
 
-**Always start with `--design-system`** to get comprehensive recommendations with reasoning:
+When the user asks for a full product website, marketing site, feature pages, pricing, use-case pages, marketplace site, or Claude Design page prompts, start with `--site-system`:
 
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<product_type> <industry> <keywords>" --design-system [-p "Project Name"]
+python3 {{SCRIPT_PATH}} "<product_type> <industry> <audience> <keywords>" --site-system -p "Project Name"
+```
+
+This command returns:
+1. Sitemap and primary navigation
+2. Page-family matrix with routes, JTBD, CTAs, evidence requirements, and QA checks
+3. Section guidance for each page family
+4. Claude Design prompt pack for page-level generation
+5. Proof and accessibility gates to prevent unsupported claims
+
+**Examples:**
+```bash
+python3 {{SCRIPT_PATH}} "consumer wellness meditation sleep app website" --site-system -p "Wellness App"
+python3 {{SCRIPT_PATH}} "marketplace host guest booking trust safety website" --site-system -p "Host Marketplace"
+python3 {{SCRIPT_PATH}} "B2B SaaS analytics platform homepage pricing feature pages" --site-system -p "Analytics SaaS"
+```
+
+**Specific page families:**
+```bash
+python3 {{SCRIPT_PATH}} "<query>" --site-system --site-pages "Homepage,Feature Detail,Pricing,Use Case" -p "Project Name"
+```
+
+### Step 2b: Generate Design System
+
+Use `--design-system` for visual direction, colors, typography, effects, and landing-pattern recommendations:
+
+```bash
+python3 {{SCRIPT_PATH}} "<product_type> <industry> <keywords>" --design-system [-p "Project Name"]
 ```
 
 This command:
@@ -71,38 +100,48 @@ This command:
 
 **Example:**
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "beauty spa wellness service" --design-system -p "Serenity Spa"
+python3 {{SCRIPT_PATH}} "beauty spa wellness service" --design-system -p "Serenity Spa"
 ```
 
-### Step 2b: Persist Design System (Master + Overrides Pattern)
+### Step 2c: Persist Design Or Site Systems
 
 To save the design system for **hierarchical retrieval across sessions**, add `--persist`:
 
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --design-system --persist -p "Project Name"
+python3 {{SCRIPT_PATH}} "<query>" --design-system --persist -p "Project Name"
 ```
 
 This creates:
-- `design-system/MASTER.md` — Global Source of Truth with all design rules
-- `design-system/pages/` — Folder for page-specific overrides
+- `design-system/<project>/MASTER.md` — Global Source of Truth with all design rules
+- `design-system/<project>/pages/` — Folder for page-specific overrides
 
 **With page-specific override:**
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --design-system --persist -p "Project Name" --page "dashboard"
+python3 {{SCRIPT_PATH}} "<query>" --design-system --persist -p "Project Name" --page "dashboard"
 ```
 
 This also creates:
-- `design-system/pages/dashboard.md` — Page-specific deviations from Master
+- `design-system/<project>/pages/dashboard.md` — Page-specific deviations from Master
+
+To persist a site system:
+
+```bash
+python3 {{SCRIPT_PATH}} "<query>" --site-system --persist -p "Project Name"
+```
+
+This creates:
+- `site-system/<project>/SITE_SYSTEM.md` — Sitemap, page matrix, QA gates, and prompt pack
+- `site-system/<project>/pages/` — Page-specific Claude Design prompts
 
 **How hierarchical retrieval works:**
-1. When building a specific page (e.g., "Checkout"), first check `design-system/pages/checkout.md`
+1. When building a specific page (e.g., "Checkout"), first check `design-system/<project>/pages/checkout.md`
 2. If the page file exists, its rules **override** the Master file
-3. If not, use `design-system/MASTER.md` exclusively
+3. If not, use `design-system/<project>/MASTER.md` exclusively
 
 **Context-aware retrieval prompt:**
 ```
-I am building the [Page Name] page. Please read design-system/MASTER.md.
-Also check if design-system/pages/[page-name].md exists.
+I am building the [Page Name] page. Please read design-system/<project>/MASTER.md.
+Also check if design-system/<project>/pages/[page-name].md exists.
 If the page file exists, prioritize its rules.
 If not, use the Master rules exclusively.
 Now, generate the code...
@@ -113,7 +152,7 @@ Now, generate the code...
 After getting the design system, use domain searches to get additional details:
 
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --domain <domain> [-n <max_results>]
+python3 {{SCRIPT_PATH}} "<keyword>" --domain <domain> [-n <max_results>]
 ```
 
 **When to use detailed searches:**
@@ -127,16 +166,18 @@ python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --domain <domain> [-n
 | Chart recommendations | `chart` | `--domain chart "real-time dashboard"` |
 | UX best practices | `ux` | `--domain ux "animation accessibility"` |
 | Landing structure | `landing` | `--domain landing "hero social-proof"` |
+| Product-site architecture | `site-architecture` | `--domain site-architecture "SaaS website pricing docs"` |
+| Page-family patterns | `page-patterns` | `--domain page-patterns "feature detail pricing"` |
+| Section patterns | `section-patterns` | `--domain section-patterns "hero proof faq"` |
 | React Native perf | `react` | `--domain react "rerender memo list"` |
 | App interface a11y | `web` | `--domain web "accessibilityLabel touch safe-areas"` |
-| AI prompt / CSS keywords | `prompt` | `--domain prompt "minimalism"` |
 
-### Step 4: Stack Guidelines (React Native)
+### Step 4: Stack Guidelines
 
-Get React Native implementation-specific best practices:
+Get implementation-specific best practices for the project stack:
 
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack react-native
+python3 {{SCRIPT_PATH}} "<keyword>" --stack <stack>
 ```
 
 ---
@@ -152,17 +193,34 @@ python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack react-native
 | `typography` | Font pairings, Google Fonts | elegant, playful, professional, modern |
 | `color` | Color palettes by product type | saas, ecommerce, healthcare, beauty, fintech, service |
 | `landing` | Page structure, CTA strategies | hero, hero-centric, testimonial, pricing, social-proof |
+| `site-architecture` | Multi-page website structure | website, sitemap, product site, marketplace, docs |
+| `page-patterns` | Page family guidance | homepage, feature detail, pricing, use case, trust |
+| `section-patterns` | Section-level patterns | hero, proof, feature grid, FAQ, CTA band |
 | `chart` | Chart types, library recommendations | trend, comparison, timeline, funnel, pie |
 | `ux` | Best practices, anti-patterns | animation, accessibility, z-index, loading |
 | `react` | React/Next.js performance | waterfall, bundle, suspense, memo, rerender, cache |
 | `web` | App interface guidelines (iOS/Android/React Native) | accessibilityLabel, touch targets, safe areas, Dynamic Type |
-| `prompt` | AI prompts, CSS keywords | (style name) |
 
 ### Available Stacks
 
 | Stack | Focus |
 |-------|-------|
-| `react-native` | Components, Navigation, Lists |
+| `react` | Components, rendering, hooks, performance |
+| `nextjs` | Routing, rendering, server/client boundaries |
+| `vue` | Components, reactivity, composition |
+| `svelte` | Components, stores, transitions |
+| `astro` | Static/content sites and islands |
+| `swiftui` | Native iOS UI |
+| `react-native` | Native app components, navigation, lists |
+| `flutter` | Cross-platform app UI |
+| `nuxtjs` | Vue SSR and routing |
+| `nuxt-ui` | Nuxt UI components |
+| `html-tailwind` | Plain HTML and Tailwind |
+| `shadcn` | shadcn/ui component patterns |
+| `jetpack-compose` | Native Android UI |
+| `threejs` | 3D web experiences |
+| `angular` | Angular components and templates |
+| `laravel` | Laravel/Blade UI |
 
 ---
 
@@ -174,12 +232,13 @@ python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack react-native
 - Product type: Tool (AI search engine)
 - Target audience: C-end users looking for fast, intelligent search
 - Style keywords: modern, minimal, content-first, dark mode
-- Stack: React Native
+- Scope: single homepage
+- Stack: infer from project context
 
-### Step 2: Generate Design System (REQUIRED)
+### Step 2: Generate Design System
 
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "AI search tool modern minimal" --design-system -p "AI Search"
+python3 {{SCRIPT_PATH}} "AI search tool modern minimal" --design-system -p "AI Search"
 ```
 
 **Output:** Complete design system with pattern, style, colors, typography, effects, and anti-patterns.
@@ -188,16 +247,16 @@ python3 skills/ui-ux-pro-max/scripts/search.py "AI search tool modern minimal" -
 
 ```bash
 # Get style options for a modern tool product
-python3 skills/ui-ux-pro-max/scripts/search.py "minimalism dark mode" --domain style
+python3 {{SCRIPT_PATH}} "minimalism dark mode" --domain style
 
 # Get UX best practices for search interaction and loading
-python3 skills/ui-ux-pro-max/scripts/search.py "search loading animation" --domain ux
+python3 {{SCRIPT_PATH}} "search loading animation" --domain ux
 ```
 
 ### Step 4: Stack Guidelines
 
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "list performance navigation" --stack react-native
+python3 {{SCRIPT_PATH}} "list performance navigation" --stack react-native
 ```
 
 **Then:** Synthesize design system + detailed searches and implement the design.
@@ -210,10 +269,17 @@ The `--design-system` flag supports two output formats:
 
 ```bash
 # ASCII box (default) - best for terminal display
-python3 skills/ui-ux-pro-max/scripts/search.py "fintech crypto" --design-system
+python3 {{SCRIPT_PATH}} "fintech crypto" --design-system
 
 # Markdown - best for documentation
-python3 skills/ui-ux-pro-max/scripts/search.py "fintech crypto" --design-system -f markdown
+python3 {{SCRIPT_PATH}} "fintech crypto" --design-system -f markdown
+```
+
+The `--site-system` flag supports Markdown and JSON:
+
+```bash
+python3 {{SCRIPT_PATH}} "B2B SaaS analytics website" --site-system -f markdown
+python3 {{SCRIPT_PATH}} "B2B SaaS analytics website" --site-system -f json
 ```
 
 ---
@@ -224,7 +290,8 @@ python3 skills/ui-ux-pro-max/scripts/search.py "fintech crypto" --design-system 
 
 - Use **multi-dimensional keywords** — combine product + industry + tone + density: `"entertainment social vibrant content-dense"` not just `"app"`
 - Try different keywords for the same need: `"playful neon"` → `"vibrant dark"` → `"content-first minimal"`
-- Use `--design-system` first for full recommendations, then `--domain` to deep-dive any dimension you're unsure about
+- Use `--site-system` first for multi-page product websites
+- Use `--design-system` first for visual systems or single-page visual direction, then `--domain` to deep-dive any dimension you're unsure about
 - Always add `--stack react-native` for implementation-specific guidance
 
 ### Common Sticking Points
@@ -257,9 +324,14 @@ Scope notice: The rules below are for App UI (iOS/Android/React Native/Flutter),
 
 ### Icons & Visual Elements
 
+- 默认图标库使用 **Phosphor (`@phosphor-icons/react`)**。`src/ui-ux-pro-max/data/icons.csv` 中列出的只是常用推荐图标，不是完整集合。
+- 当推荐表中找不到合适的图标时：
+  - **优先继续从 Phosphor 的完整图标集中选择任何语义更贴切的图标**；
+  - 如果 Phosphor 也没有理想选项，可以使用 **Heroicons (`@heroicons/react`)** 作为备选，注意保持风格一致（线性/填充、笔画粗细、圆角风格）。
+
 | Rule | Standard | Avoid | Why It Matters |
 |------|----------|--------|----------------|
-| **No Emoji as Structural Icons** | Use vector-based icons (e.g., Lucide, react-native-vector-icons, @expo/vector-icons). | Using emojis (🎨 🚀 ⚙️) for navigation, settings, or system controls. | Emojis are font-dependent, inconsistent across platforms, and cannot be controlled via design tokens. |
+| **No Emoji as Structural Icons** | Use vector-based icons (e.g., Phosphor `@phosphor-icons/react`, Heroicons `@heroicons/react`, react-native-vector-icons, @expo/vector-icons). | Using emojis (🎨 🚀 ⚙️) for navigation, settings, or system controls. | Emojis are font-dependent, inconsistent across platforms, and cannot be controlled via design tokens. |
 | **Vector-Only Assets** | Use SVG or platform vector icons that scale cleanly and support theming. | Raster PNG icons that blur or pixelate. | Ensures scalability, crisp rendering, and dark/light mode adaptability. |
 | **Stable Interaction States** | Use color, opacity, or elevation transitions for press states without changing layout bounds. | Layout-shifting transforms that move surrounding content or trigger visual jitter. | Prevents unstable interactions and preserves smooth motion/perceived quality on mobile. |
 | **Correct Brand Logos** | Use official brand assets and follow their usage guidelines (spacing, color, clear space). | Guessing logo paths, recoloring unofficially, or modifying proportions. | Prevents brand misuse and ensures legal/platform compliance. |

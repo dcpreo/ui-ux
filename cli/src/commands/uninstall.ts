@@ -5,9 +5,10 @@ import chalk from 'chalk';
 import ora from 'ora';
 import prompts from 'prompts';
 import type { AIType } from '../types/index.js';
-import { AI_TYPES, AI_FOLDERS } from '../types/index.js';
+import { AI_FOLDERS } from '../types/index.js';
 import { detectAIType, getAITypeDescription } from '../utils/detect.js';
 import { logger } from '../utils/logger.js';
+import { loadPlatformConfig } from '../utils/template.js';
 
 interface UninstallOptions {
   ai?: AIType;
@@ -20,15 +21,24 @@ interface UninstallOptions {
 async function removeSkillDir(baseDir: string, aiType: Exclude<AIType, 'all'>): Promise<string[]> {
   const folders = AI_FOLDERS[aiType];
   const removed: string[] = [];
+  const config = await loadPlatformConfig(aiType);
+  const candidates = new Set<string>();
 
   for (const folder of folders) {
-    const skillDir = join(baseDir, folder, 'skills', 'ui-ux-pro-max');
+    if (folder === config.folderStructure.root) {
+      candidates.add(join(folder, config.folderStructure.skillPath));
+    }
+    candidates.add(join(folder, 'skills', 'ui-ux-pro-max'));
+  }
+
+  for (const relativeDir of candidates) {
+    const skillDir = join(baseDir, relativeDir);
     try {
       await stat(skillDir);
       await rm(skillDir, { recursive: true, force: true });
-      removed.push(`${folder}/skills/ui-ux-pro-max`);
+      removed.push(relativeDir);
     } catch (err: unknown) {
-      // Skip non-existent dirs; re-throw permission or other errors
+      // Skip non-existent dirs; re-throw permission or other errors.
       if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
     }
   }

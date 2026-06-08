@@ -1,0 +1,51 @@
+name: Validation
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install CLI dependencies
+        working-directory: cli
+        run: bun install --frozen-lockfile
+
+      - name: Compile Python scripts
+        run: |
+          python3 -m py_compile \
+            src/ui-ux-pro-max/scripts/core.py \
+            src/ui-ux-pro-max/scripts/design_system.py \
+            src/ui-ux-pro-max/scripts/site_system.py \
+            src/ui-ux-pro-max/scripts/search.py
+
+      - name: Run Python tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Validate source/package sync
+        run: python3 scripts/validate_sync.py
+
+      - name: Validate metadata
+        run: python3 scripts/validate_metadata.py
+
+      - name: Validate templates
+        run: python3 scripts/validate_templates.py
+
+      - name: Build CLI
+        working-directory: cli
+        run: bun run build
+
+      - name: Validate generated installs
+        run: python3 scripts/validate_generated_installs.py

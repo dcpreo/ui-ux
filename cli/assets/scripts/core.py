@@ -35,6 +35,21 @@ CSV_CONFIG = {
         "search_cols": ["Pattern Name", "Keywords", "Conversion Optimization", "Section Order"],
         "output_cols": ["Pattern Name", "Keywords", "Section Order", "Primary CTA Placement", "Color Strategy", "Conversion Optimization"]
     },
+    "site-architecture": {
+        "file": "site-architecture.csv",
+        "search_cols": ["Site Type", "Keywords", "Required Page Families", "Optional Page Families", "Primary Navigation", "Conversion Journey", "Proof/Evidence Model", "Content/SEO Model", "Anti-Patterns"],
+        "output_cols": ["Site Type", "Keywords", "Required Page Families", "Optional Page Families", "Primary Navigation", "Conversion Journey", "Proof/Evidence Model", "Content/SEO Model", "Anti-Patterns"]
+    },
+    "page-patterns": {
+        "file": "page-patterns.csv",
+        "search_cols": ["Page Family", "Keywords", "Job To Be Done", "Required Sections", "Optional Sections", "Primary CTA", "Evidence Required", "Internal Links", "Claude Design Prompt Notes", "QA Checks"],
+        "output_cols": ["Page Family", "Keywords", "Route Pattern", "Job To Be Done", "Required Sections", "Optional Sections", "Primary CTA", "Evidence Required", "Internal Links", "Claude Design Prompt Notes", "QA Checks"]
+    },
+    "section-patterns": {
+        "file": "section-patterns.csv",
+        "search_cols": ["Section Intent", "Keywords", "Layout Pattern", "Use When", "Avoid When", "Copy Inputs", "Visual Assets", "Interaction Notes", "Accessibility Checks"],
+        "output_cols": ["Section Intent", "Keywords", "Layout Pattern", "Use When", "Avoid When", "Copy Inputs", "Visual Assets", "Interaction Notes", "Accessibility Checks"]
+    },
     "product": {
         "file": "products.csv",
         "search_cols": ["Product Type", "Keywords", "Primary Style Recommendation", "Key Considerations"],
@@ -73,7 +88,22 @@ CSV_CONFIG = {
 }
 
 STACK_CONFIG = {
-    "react-native": {"file": "stacks/react-native.csv"},
+    "react":            {"file": "stacks/react.csv"},
+    "nextjs":           {"file": "stacks/nextjs.csv"},
+    "vue":              {"file": "stacks/vue.csv"},
+    "svelte":           {"file": "stacks/svelte.csv"},
+    "astro":            {"file": "stacks/astro.csv"},
+    "swiftui":          {"file": "stacks/swiftui.csv"},
+    "react-native":     {"file": "stacks/react-native.csv"},
+    "flutter":          {"file": "stacks/flutter.csv"},
+    "nuxtjs":           {"file": "stacks/nuxtjs.csv"},
+    "nuxt-ui":          {"file": "stacks/nuxt-ui.csv"},
+    "html-tailwind":    {"file": "stacks/html-tailwind.csv"},
+    "shadcn":           {"file": "stacks/shadcn.csv"},
+    "jetpack-compose":  {"file": "stacks/jetpack-compose.csv"},
+    "threejs":          {"file": "stacks/threejs.csv"},
+    "angular":          {"file": "stacks/angular.csv"},
+    "laravel":          {"file": "stacks/laravel.csv"},
 }
 
 # Common columns for all stacks
@@ -187,7 +217,10 @@ def detect_domain(query):
     domain_keywords = {
         "color": ["color", "palette", "hex", "#", "rgb", "token", "semantic", "accent", "destructive", "muted", "foreground"],
         "chart": ["chart", "graph", "visualization", "trend", "bar", "pie", "scatter", "heatmap", "funnel"],
-        "landing": ["landing", "page", "cta", "conversion", "hero", "testimonial", "pricing", "section"],
+        "landing": ["landing", "page", "cta", "conversion", "hero", "testimonial", "section"],
+        "site-architecture": ["website", "site", "sitemap", "information architecture", "ia", "navigation", "nav", "homepage", "full site", "marketing site", "product site", "feature pages", "pricing", "use case", "about page", "docs", "blog", "resource center", "claude design site", "page family", "multi page"],
+        "page-patterns": ["homepage", "feature page", "features page", "pricing page", "use case page", "customer story", "case study", "about page", "docs page", "blog page", "resource page", "trust page", "safety page", "host page", "marketplace page"],
+        "section-patterns": ["section pattern", "hero section", "feature grid", "proof section", "faq section", "pricing section", "comparison section", "how it works", "trust section", "cta band", "content hub"],
         "product": ["saas", "ecommerce", "e-commerce", "fintech", "healthcare", "gaming", "portfolio", "crypto", "dashboard", "fitness", "restaurant", "hotel", "travel", "music", "education", "learning", "legal", "insurance", "medical", "beauty", "pharmacy", "dental", "pet", "dating", "wedding", "recipe", "delivery", "ride", "booking", "calendar", "timer", "tracker", "diary", "note", "chat", "messenger", "crm", "invoice", "parking", "transit", "vpn", "alarm", "weather", "sleep", "meditation", "fasting", "habit", "grocery", "meme", "wardrobe", "plant care", "reading", "flashcard", "puzzle", "trivia", "arcade", "photography", "streaming", "podcast", "newsletter", "marketplace", "freelancer", "coworking", "airline", "museum", "theater", "church", "non-profit", "charity", "kindergarten", "daycare", "senior care", "veterinary", "florist", "bakery", "brewery", "construction", "automotive", "real estate", "logistics", "agriculture", "coding bootcamp"],
         "style": ["style", "design", "ui", "minimalism", "glassmorphism", "neumorphism", "brutalism", "dark mode", "flat", "aurora", "prompt", "css", "implementation", "variable", "checklist", "tailwind"],
         "ux": ["ux", "usability", "accessibility", "wcag", "touch", "scroll", "animation", "keyboard", "navigation", "mobile"],

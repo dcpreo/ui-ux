@@ -4,10 +4,11 @@
 UI/UX Pro Max Search - BM25 search engine for UI/UX style guides
 Usage: python search.py "<query>" [--domain <domain>] [--stack <stack>] [--max-results 3]
        python search.py "<query>" --design-system [-p "Project Name"]
+       python search.py "<query>" --site-system [-p "Project Name"] [--site-pages "Homepage,Pricing"]
        python search.py "<query>" --design-system --persist [-p "Project Name"] [--page "dashboard"]
 
-Domains: style, prompt, color, chart, landing, product, ux, typography
-Stacks: html-tailwind, react, nextjs
+Domains: style, color, chart, landing, site-architecture, page-patterns, section-patterns, product, ux, typography, google-fonts
+Stacks: react, nextjs, vue, svelte, astro, swiftui, react-native, flutter, nuxtjs, nuxt-ui, html-tailwind, shadcn, jetpack-compose, threejs, angular, laravel
 
 Persistence (Master + Overrides pattern):
   --persist    Save design system to design-system/MASTER.md
@@ -19,6 +20,7 @@ import sys
 import io
 from core import CSV_CONFIG, AVAILABLE_STACKS, MAX_RESULTS, search, search_stack
 from design_system import generate_design_system, persist_design_system
+from site_system import generate_site_system, slugify
 
 # Force UTF-8 for stdout/stderr to handle emojis on Windows (cp1252 default)
 if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
@@ -57,25 +59,50 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="UI Pro Max Search")
     parser.add_argument("query", help="Search query")
     parser.add_argument("--domain", "-d", choices=list(CSV_CONFIG.keys()), help="Search domain")
-    parser.add_argument("--stack", "-s", choices=AVAILABLE_STACKS, help="Stack-specific search (html-tailwind, react, nextjs)")
+    parser.add_argument("--stack", "-s", choices=AVAILABLE_STACKS, help=f"Stack-specific search. Available: {', '.join(AVAILABLE_STACKS)}")
     parser.add_argument("--max-results", "-n", type=int, default=MAX_RESULTS, help="Max results (default: 3)")
     parser.add_argument("--json", action="store_true", help="Output as JSON")
     # Design system generation
     parser.add_argument("--design-system", "-ds", action="store_true", help="Generate complete design system recommendation")
+    parser.add_argument("--site-system", "-ss", action="store_true", help="Generate product website sitemap, page matrix, QA gates, and Claude Design prompts")
     parser.add_argument("--project-name", "-p", type=str, default=None, help="Project name for design system output")
-    parser.add_argument("--format", "-f", choices=["ascii", "markdown"], default="ascii", help="Output format for design system")
+    parser.add_argument("--format", "-f", choices=["ascii", "markdown", "json"], default="ascii", help="Output format for generated systems")
     # Persistence (Master + Overrides pattern)
-    parser.add_argument("--persist", action="store_true", help="Save design system to design-system/MASTER.md (creates hierarchical structure)")
+    parser.add_argument("--persist", action="store_true", help="Save design system or site system to disk (creates hierarchical structure)")
     parser.add_argument("--page", type=str, default=None, help="Create page-specific override file in design-system/pages/")
+    parser.add_argument("--site-pages", type=str, default=None, help="Comma/semicolon-separated page families for --site-system")
     parser.add_argument("--output-dir", "-o", type=str, default=None, help="Output directory for persisted files (default: current directory)")
 
     args = parser.parse_args()
 
-    # Design system takes priority
-    if args.design_system:
+    # Site system takes priority over lower-level searches.
+    if args.site_system:
+        site_format = "json" if args.json or args.format == "json" else "markdown"
+        result = generate_site_system(
+            args.query,
+            args.project_name,
+            site_format,
+            persist=args.persist,
+            site_pages=args.site_pages,
+            output_dir=args.output_dir
+        )
+        print(result)
+
+        if args.persist:
+            project_slug = slugify(args.project_name) if args.project_name else slugify(args.query)
+            confirmation_stream = sys.stderr if site_format == "json" else sys.stdout
+            print("\n" + "=" * 60, file=confirmation_stream)
+            print(f"✅ Site system persisted to site-system/{project_slug}/", file=confirmation_stream)
+            print(f"   📄 site-system/{project_slug}/SITE_SYSTEM.md (Sitemap + Page Matrix + Prompt Pack)", file=confirmation_stream)
+            print(f"   📁 site-system/{project_slug}/pages/ (Page-specific Claude Design prompts)", file=confirmation_stream)
+            print("=" * 60, file=confirmation_stream)
+    # Design system takes priority over stack/domain search.
+    elif args.design_system:
+        if args.format == "json":
+            parser.error("--format json is only supported with --site-system. Use --json for domain or stack searches.")
         result = generate_design_system(
-            args.query, 
-            args.project_name, 
+            args.query,
+            args.project_name,
             args.format,
             persist=args.persist,
             page=args.page,

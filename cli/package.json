@@ -13,6 +13,7 @@
   "scripts": {
     "build": "bun build src/index.ts --outdir dist --target node",
     "dev": "bun run src/index.ts",
+    "test": "python3 ../scripts/validate_sync.py && python3 ../scripts/validate_metadata.py && python3 ../scripts/validate_templates.py && python3 -m unittest discover -s ../tests -v && bun run build && python3 ../scripts/validate_generated_installs.py",
     "prepublishOnly": "bun run build"
   },
   "keywords": [
