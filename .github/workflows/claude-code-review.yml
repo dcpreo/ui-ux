@@ -11,7 +11,29 @@ on:
     #   - "src/**/*.jsx"
 
 jobs:
+  # Detect whether the CLAUDE_CODE_OAUTH_TOKEN secret is configured. The
+  # secrets context is not available in job-level `if` conditions, so we
+  # surface it as an output and gate the review job on it. This lets forks
+  # and repos without the secret skip the job cleanly instead of failing.
+  check-secret:
+    runs-on: ubuntu-latest
+    outputs:
+      has_token: ${{ steps.check.outputs.has_token }}
+    steps:
+      - id: check
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -n "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::CLAUDE_CODE_OAUTH_TOKEN secret not set; skipping Claude review."
+          fi
+
   claude-review:
+    needs: check-secret
+    if: needs.check-secret.outputs.has_token == 'true'
     # Optional: Filter by PR author
     # if: |
     #   github.event.pull_request.user.login == 'external-contributor' ||
@@ -41,4 +63,3 @@ jobs:
           prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
-
